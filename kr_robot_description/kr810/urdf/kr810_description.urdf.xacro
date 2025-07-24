@@ -645,4 +645,6 @@
 
   </xacro:macro>
 
+  <xacro:kr810_description />
+
 </robot>
