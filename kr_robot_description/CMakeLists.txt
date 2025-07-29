@@ -5,7 +5,7 @@ find_package(ament_cmake REQUIRED)
 
 install(
   DIRECTORY 
-  kr810/meshes kr810/urdf kr810/rviz
+  kr810/meshes kr810/urdf kr810/rviz kr810/config
   DESTINATION share/${PROJECT_NAME}/kr810
 )
 
