@@ -534,212 +534,88 @@
     <child link="base"/>
   </joint>
 
-  <!-- Deprecated for Gazebo Harmonic -->
-  <!-- <gazebo>
-      <plugin filename="libgazebo_ros_control.so" name="ros_control">
-          <robotNamespace>/kr2_robot</robotNamespace>
-     </plugin>
-  </gazebo> -->
-
-  <!-- Following material setting relies on Ogre which is not supported anymore by Gazebo Harmonic -->
-  <!-- <gazebo reference="base">
-    <material>Gazebo/Black</material>
-  </gazebo>
-  <gazebo reference="link1">
-    <material>Gazebo/Grey</material>
-  </gazebo>
-  <gazebo reference="link2">
-    <material>Gazebo/White</material>
-  </gazebo>
-  <gazebo reference="link3">
-    <material>Gazebo/Grey</material>
-  </gazebo>
-  <gazebo reference="link4">
-    <material>Gazebo/White</material>
-  </gazebo>
-  <gazebo reference="link5">
-    <material>Gazebo/Grey</material>
-  </gazebo>
-  <gazebo reference="link6">
-    <material>Gazebo/White</material>
-  </gazebo>
-  <gazebo reference="end_effector">
-    <material>Gazebo/Black</material>
-  </gazebo> -->
-
-
-  <ros2_control name="kr810_system" type="gz_ros2_control::GazeboSimSystemInterface">
+  <ros2_control name="GazeboSimSystem" type="system">
     <hardware>
-      <plugin>gz_ros2_control/GazeboSimSystem</plugin> <!-- Changed from gazebo_ros2_control/GazeboSystem to gz_ros2_control/GazeboSimSystem -->
-      <!-- <plugin>kr_robot_driver/RobotSystem</plugin> Expected usage for real robot! -->
-
-      <param name="joints">
-        joint_1 joint_2 joint_3 joint_4 joint_5 joint_6 joint_7
-      </param>
-
-      <param name="command_interfaces">effort</param>
-      <param name="state_interfaces">position velocity</param>
-      <param name="use_sim_time">true</param>
-
+      <!-- Gazebo Harmonic backend -->
+      <plugin>gz_ros2_control/GazeboSimSystem</plugin>
     </hardware>
 
-    <!-- Each joint: effort-based control -->
+    <!-- 7 revolute joints, position command -->
     <joint name="joint_1">
-      <command_interface name="effort"/>
-      <state_interface name="position"/>
+      <command_interface name="position">
+      </command_interface>
+      <state_interface name="position">
+        <param name="initial_value">1.0</param>
+      </state_interface>
       <state_interface name="velocity"/>
     </joint>
     <joint name="joint_2">
-      <command_interface name="effort"/>
-      <state_interface name="position"/>
+      <command_interface name="position">
+      </command_interface>
+      <state_interface name="position">
+        <param name="initial_value">-1.0</param>
+      </state_interface>
       <state_interface name="velocity"/>
     </joint>
     <joint name="joint_3">
-      <command_interface name="effort"/>
-      <state_interface name="position"/>
+      <command_interface name="position">
+      </command_interface>
+      <state_interface name="position">
+        <param name="initial_value">1.0</param>
+      </state_interface>
       <state_interface name="velocity"/>
     </joint>
     <joint name="joint_4">
-      <command_interface name="effort"/>
-      <state_interface name="position"/>
+      <command_interface name="position">
+      </command_interface>
+      <state_interface name="position">
+        <param name="initial_value">1.0</param>
+      </state_interface>
       <state_interface name="velocity"/>
     </joint>
     <joint name="joint_5">
-      <command_interface name="effort"/>
-      <state_interface name="position"/>
+      <command_interface name="position">
+      </command_interface>
+      <state_interface name="position">
+        <param name="initial_value">1.0</param>
+      </state_interface>
       <state_interface name="velocity"/>
     </joint>
     <joint name="joint_6">
-      <command_interface name="effort"/>
-      <state_interface name="position"/>
+      <command_interface name="position">
+      </command_interface>
+      <state_interface name="position">
+        <param name="initial_value">1.0</param>
+      </state_interface>
       <state_interface name="velocity"/>
     </joint>
     <joint name="joint_7">
-      <command_interface name="effort"/>
-      <state_interface name="position"/>
+      <command_interface name="position">
+      </command_interface>
+      <state_interface name="position">
+        <param name="initial_value">1.0</param>
+      </state_interface>
       <state_interface name="velocity"/>
     </joint>
   </ros2_control>
-
-  <!-- Transmission mappings -->
-  <transmission name="tran_1">
-    <type>transmission_interface/SimpleTransmission</type>
-    <joint name="joint_1">
-      <!-- <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface> -->
-      <hardwareInterface>effort</hardwareInterface>
-    </joint>
-    <actuator name="motor_1">
-      <!-- <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface> -->
-      <hardwareInterface>effort</hardwareInterface>
-      <mechanicalReduction>1</mechanicalReduction>
-    </actuator>
-  </transmission>
-
-  <transmission name="tran_2">
-    <type>transmission_interface/SimpleTransmission</type>
-    <joint name="joint_2">
-      <!-- <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface> -->
-      <hardwareInterface>effort</hardwareInterface>
-    </joint>
-    <actuator name="motor_2">
-      <!-- <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface> -->
-      <hardwareInterface>effort</hardwareInterface>
-      <mechanicalReduction>1</mechanicalReduction>
-    </actuator>
-  </transmission>
-
-  <transmission name="tran_3">
-    <type>transmission_interface/SimpleTransmission</type>
-    <joint name="joint_3">
-      <!-- <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface> -->
-      <hardwareInterface>effort</hardwareInterface>
-    </joint>
-    <actuator name="motor_3">
-      <!-- <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface> -->
-      <hardwareInterface>effort</hardwareInterface>
-      <mechanicalReduction>1</mechanicalReduction>
-    </actuator>
-  </transmission>
-
-  <transmission name="tran_4">
-    <type>transmission_interface/SimpleTransmission</type>
-    <joint name="joint_4">
-      <!-- <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface> -->
-      <hardwareInterface>effort</hardwareInterface>
-    </joint>
-    <actuator name="motor_4">
-      <!-- <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface> -->
-      <hardwareInterface>effort</hardwareInterface>
-      <mechanicalReduction>1</mechanicalReduction>
-    </actuator>
-  </transmission>
-
-  <transmission name="tran_5">
-    <type>transmission_interface/SimpleTransmission</type>
-    <joint name="joint_5">
-      <!-- <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface> -->
-      <hardwareInterface>effort</hardwareInterface>
-    </joint>
-    <actuator name="motor_5">
-      <!-- <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface> -->
-      <hardwareInterface>effort</hardwareInterface>
-      <mechanicalReduction>1</mechanicalReduction>
-    </actuator>
-  </transmission>
-
-  <transmission name="tran_6">
-    <type>transmission_interface/SimpleTransmission</type>
-    <joint name="joint_6">
-      <!-- <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface> -->
-      <hardwareInterface>effort</hardwareInterface>
-    </joint>
-    <actuator name="motor_6">
-      <hardwareInterface>effort</hardwareInterface>
-      <mechanicalReduction>1</mechanicalReduction>
-    </actuator>
-  </transmission>
-
-  <transmission name="tran_7">
-    <type>transmission_interface/SimpleTransmission</type>
-    <joint name="joint_7">
-      <!-- <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface> -->
-      <hardwareInterface>effort</hardwareInterface>
-    </joint>
-    <actuator name="motor_7">
-      <!-- <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface> -->
-      <hardwareInterface>effort</hardwareInterface>
-      <mechanicalReduction>1</mechanicalReduction>
-    </actuator>
-  </transmission>
 
   </xacro:macro>
 
   <xacro:kr810_description />
 
-  <gazebo>
-    <plugin name="gz_ros2_control" filename="libgz_ros2_control.so"/>
-  </gazebo>
+  <xacro:arg name="controllers_file" default="BLAH!"/>
 
-  <gazebo reference="joint_1">
-    <provideFeedback>true</provideFeedback>
-  </gazebo>
-  <gazebo reference="joint_2">
-    <provideFeedback>true</provideFeedback>
-  </gazebo>
-  <gazebo reference="joint_3">
-    <provideFeedback>true</provideFeedback>
-  </gazebo>
-  <gazebo reference="joint_4">
-    <provideFeedback>true</provideFeedback>
-  </gazebo>
-  <gazebo reference="joint_5">
-    <provideFeedback>true</provideFeedback>
-  </gazebo>
-  <gazebo reference="joint_6">
-    <provideFeedback>true</provideFeedback>
-  </gazebo>
-  <gazebo reference="joint_7">
-    <provideFeedback>true</provideFeedback>
+  <gazebo>
+    <plugin filename="libgz_ros2_control-system.so"
+            name="gz_ros2_control::GazeboSimROS2ControlPlugin">
+      <!-- Point to the controllers YAML we’ll create below -->
+      <!-- <parameters>$(find kr_robot_description)/kr810/config/kr810_controllers.yaml</parameters> -->
+      <parameters>$(arg controllers_file)</parameters>
+
+      <!-- Optional tuning (documented by gz_ros2_control): -->
+      <!-- <position_proportional_gain>0.3</position_proportional_gain> -->
+      <!-- <hold_joints>true</hold_joints> -->
+    </plugin>
   </gazebo>
 
 </robot>
