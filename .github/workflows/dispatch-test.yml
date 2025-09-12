@@ -48,25 +48,25 @@ jobs:
           echo "bytes=$(wc -c < payload.json)"
           echo "::endgroup::"
 
-      - name: Dispatch via curl (JSON, binary-safe)
-        env:
-          TOKEN:  ${{ secrets.FUTURHAND_SUBMODULE_UPDATE }}   # fine-grained PAT with Contents: RW on target repo
-          TARGET: ${{ inputs.target_repo }}
-        run: |
-          set -euo pipefail
-          test -n "${TOKEN:-}" || { echo "::error::Missing FUTURHAND_SUBMODULE_UPDATE secret"; exit 1; }
-          resp="$(mktemp)"
-          code=$(curl -sS -o "$resp" -w "%{http_code}" -X POST \
-            -H "Authorization: Bearer ${TOKEN}" \
-            -H "Accept: application/vnd.github+json" \
-            -H "Content-Type: application/json" \
-            -H "X-GitHub-Api-Version: 2022-11-28" \
-            --data-binary @payload.json \
-            "https://api.github.com/repos/${TARGET}/dispatches")
-          echo "::group::Response (HTTP $code)"
-          if [ -s "$resp" ]; then cat "$resp"; else echo "<empty>"; fi
-          echo "::endgroup::"
-          test "$code" = "204" || { echo "::error::Expected 204, got $code"; exit 1; }
+      # - name: Dispatch via curl (JSON, binary-safe)
+      #   env:
+      #     TOKEN:  ${{ secrets.FUTURHAND_SUBMODULE_UPDATE }}   # fine-grained PAT with Contents: RW on target repo
+      #     TARGET: ${{ inputs.target_repo }}
+      #   run: |
+      #     set -euo pipefail
+      #     test -n "${TOKEN:-}" || { echo "::error::Missing FUTURHAND_SUBMODULE_UPDATE secret"; exit 1; }
+      #     resp="$(mktemp)"
+      #     code=$(curl -sS -o "$resp" -w "%{http_code}" -X POST \
+      #       -H "Authorization: Bearer ${TOKEN}" \
+      #       -H "Accept: application/vnd.github+json" \
+      #       -H "Content-Type: application/json" \
+      #       -H "X-GitHub-Api-Version: 2022-11-28" \
+      #       --data-binary @payload.json \
+      #       "https://api.github.com/repos/${TARGET}/dispatches")
+      #     echo "::group::Response (HTTP $code)"
+      #     if [ -s "$resp" ]; then cat "$resp"; else echo "<empty>"; fi
+      #     echo "::endgroup::"
+      #     test "$code" = "204" || { echo "::error::Expected 204, got $code"; exit 1; }
 
       # Optional: also prove with gh api (uses same token)
       - name: Dispatch via gh api (control test)
