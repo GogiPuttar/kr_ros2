@@ -32,6 +32,7 @@ jobs:
           echo "$payload"
           echo "::endgroup::"
 
+          export payload="$payload"
           echo "len=${#payload}"
           python3 - <<'PY'
           import os, json; json.loads(os.environ["payload"])
