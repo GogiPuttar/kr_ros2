@@ -1,0 +1,66 @@
+# .github/workflows/dispatch-test.yml
+name: Dispatch test (JSON)
+
+on:
+  workflow_dispatch:
+    inputs:
+      target_repo:
+        description: "owner/repo to dispatch to"
+        required: true
+        default: FuturHandRobotics/FuturHub
+      event_type:
+        description: "event_type to send (e.g., ping or submodule_update)"
+        required: true
+        default: ping
+      submodule_path:
+        description: "client_payload.submodule_path (optional)"
+        required: false
+      sha:
+        description: "client_payload.sha (optional)"
+        required: false
+      repo:
+        description: "client_payload.repo (optional)"
+        required: false
+
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dispatch request
+        env:
+          TOKEN: ${{ secrets.FUTURHAND_SUBMODULE_UPDATE }}  # PAT with Contents: read/write on target repo
+          TARGET: ${{ inputs.target_repo }}
+          EVENT: ${{ inputs.event_type }}
+          SUBMODULE_PATH: ${{ inputs.submodule_path }}
+          SHA: ${{ inputs.sha }}
+          REPO: ${{ inputs.repo }}
+        run: |
+          set -euo pipefail
+          if [ -z "${TOKEN:-}" ]; then
+            echo "::error::Secret FUTURHAND_SUBMODULE_UPDATE is missing in this repo"; exit 1; fi
+
+          # Build a valid JSON payload
+          if [ "$EVENT" = "ping" ]; then
+            payload='{"event_type":"ping","client_payload":{}}'
+          else
+            payload=$(printf '{"event_type":"%s","client_payload":{"submodule_path":"%s","sha":"%s","repo":"%s"}}' \
+              "$EVENT" "${SUBMODULE_PATH:-}" "${SHA:-}" "${REPO:-}")
+          fi
+
+          echo "::group::Payload"
+          echo "$payload"
+          echo "::endgroup::"
+
+          resp_file="$(mktemp)"
+          code=$(curl -sS -o "$resp_file" -w "%{http_code}" -X POST \
+            -H "Authorization: Bearer ${TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            -H "Content-Type: application/json" \
+            --data "$payload" \
+            "https://api.github.com/repos/${TARGET}/dispatches") || { echo "::error::Network error"; exit 1; }
+
+          echo "::group::Response (HTTP $code)"
+          if [ -s "$resp_file" ]; then cat "$resp_file"; else echo "<empty>"; fi
+          echo "::endgroup::"
+
+          test "$code" = "204" || { echo "::error::Expected 204, got $code"; exit 1; }
