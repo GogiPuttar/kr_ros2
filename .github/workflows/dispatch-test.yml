@@ -43,18 +43,21 @@ jobs:
 
       - name: Dispatch (gh api)
         env:
-          TOKEN:  ${{ secrets.FUTURHAND_SUBMODULE_UPDATE }}   # PAT with Contents: read/write on TARGET
+          TOKEN:  ${{ secrets.FUTURHAND_SUBMODULE_UPDATE }}   # PAT with Contents: RW on TARGET
           TARGET: ${{ inputs.target_repo }}
         run: |
           set -euo pipefail
           test -n "${TOKEN:-}" || { echo "::error::Missing FUTURHAND_SUBMODULE_UPDATE"; exit 1; }
           echo "$TOKEN" | gh auth login --with-token >/dev/null
-          # Send the exact JSON file; expect 204 on success
-          gh api "repos/${TARGET}/dispatches" \
+
+          # Send JSON and capture status code (first line contains HTTP/2 <code>)
+          status=$(gh api "repos/${TARGET}/dispatches" \
             -H "Accept: application/vnd.github+json" \
             -H "X-GitHub-Api-Version: 2022-11-28" \
             --input payload.json \
             -X POST \
-            --silent \
-            --jq '.message // "HTTP 204 (no body)"' \
-          || { echo "::error::Dispatch failed"; exit 1; }
+            -i | head -n1 | awk '{print $2}')
+
+          echo "HTTP status: $status"
+          test "$status" = "204" || { echo "::error::Expected 204, got $status"; exit 1; }
+
