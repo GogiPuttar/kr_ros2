@@ -2,7 +2,7 @@ name: Notify parent to bump submodule
 
 on:
   push:
-    branches: [ ros2_jazzy ]  # <- Edit here
+    branches: [ main ]
   workflow_dispatch: {}
 
 jobs:
@@ -19,7 +19,7 @@ jobs:
         env:
           GH_PARENT_REPO: FuturHandRobotics/FuturHub  # <- Edit here
           GH_TOKEN: ${{ secrets.FUTURHAND_SUBMODULE_UPDATE }}
-          SUBMODULE_PATH_IN_PARENT: external/kr_ros2  # <- Edit here
+          SUBMODULE_PATH_IN_PARENT: src/futur_data  # <- Edit here
           SHA: ${{ steps.prep.outputs.sha }}
           REPO: ${{ steps.prep.outputs.repo }}
         run: |
@@ -32,21 +32,13 @@ jobs:
           echo "$payload"
           echo "::endgroup::"
 
-          export payload="$payload"
-          echo "len=${#payload}"
-          python3 - <<'PY'
-          import os, json; json.loads(os.environ["payload"])
-          print("JSON OK")
-          PY
-
           # Send request and capture body + status code
           resp_file="$(mktemp)"
           code=$(curl -sS -o "$resp_file" -w "%{http_code}" -X POST \
             "https://api.github.com/repos/${GH_PARENT_REPO}/dispatches" \
             -H "Authorization: Bearer $GH_TOKEN" \
             -H "Accept: application/vnd.github+json" \
-            -H "X-GitHub-Api-Version: 2022-11-28" \
-            --json "$payload") || { echo "::error::curl failed to reach GitHub"; cat "$resp_file" || true; exit 1; }
+            -d "$payload") || { echo "::error::curl failed to reach GitHub"; cat "$resp_file" || true; exit 1; }
 
           echo "::group::Response (HTTP $code)"
           # Body may be empty on success (204); still show for transparency
@@ -84,12 +76,11 @@ jobs:
               echo "::warning title=GitHub server error::HTTP $code. Transient issue—consider retry/backoff."
               # Optional quick retry (1x):
               sleep 2
-              code=$(curl -sS -o "$resp_file" -w "%{http_code}" -X POST \
+              code2=$(curl -sS -o "$resp_file" -w "%{http_code}" -X POST \
                 "https://api.github.com/repos/${GH_PARENT_REPO}/dispatches" \
                 -H "Authorization: Bearer $GH_TOKEN" \
                 -H "Accept: application/vnd.github+json" \
-                -H "X-GitHub-Api-Version: 2022-11-28" \
-                --json "$payload")
+                -d "$payload")
               echo "::notice::Retry status: $code2"
               if [ "$code2" != "204" ]; then
                 echo "::error::Retry failed. See response above."
