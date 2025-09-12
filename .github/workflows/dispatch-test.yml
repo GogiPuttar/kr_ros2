@@ -50,14 +50,22 @@ jobs:
           test -n "${TOKEN:-}" || { echo "::error::Missing FUTURHAND_SUBMODULE_UPDATE"; exit 1; }
           echo "$TOKEN" | gh auth login --with-token >/dev/null
 
-          # Send JSON and capture status code (first line contains HTTP/2 <code>)
-          status=$(gh api "repos/${TARGET}/dispatches" \
+          resp="$(mktemp)"
+          # Include headers so we can read the status line
+          gh api "repos/${TARGET}/dispatches" \
             -H "Accept: application/vnd.github+json" \
             -H "X-GitHub-Api-Version: 2022-11-28" \
             --input payload.json \
             -X POST \
-            -i | head -n1 | awk '{print $2}')
+            -i > "$resp"
 
+          # Show the status line, then assert it's 204
+          status="$(awk 'NR==1 {print $2}' "$resp")"
           echo "HTTP status: $status"
-          test "$status" = "204" || { echo "::error::Expected 204, got $status"; exit 1; }
+          if [ "$status" != "204" ]; then
+            echo "::error::Expected 204, got $status"
+            echo "::group::Full response"; cat "$resp"; echo "::endgroup::"
+            exit 1
+          fi
+
 
