@@ -32,6 +32,12 @@ jobs:
           echo "$payload"
           echo "::endgroup::"
 
+          echo "len=${#payload}"
+          python3 - <<'PY'
+          import os, json; json.loads(os.environ["payload"])
+          print("JSON OK")
+          PY
+
           # Send request and capture body + status code
           resp_file="$(mktemp)"
           code=$(curl -sS -o "$resp_file" -w "%{http_code}" -X POST \
