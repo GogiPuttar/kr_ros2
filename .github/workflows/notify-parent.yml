@@ -20,7 +20,7 @@ jobs:
           GH_PARENT_REPO: FuturHandRobotics/FuturHub  # <- Edit here
           GH_TOKEN: ${{ secrets.FUTURHAND_SUBMODULE_UPDATE }}
           SUBMODULE_PATH_IN_PARENT: external/kr_ros2  # <- Edit here
-          SHA: ${{ steps.prep.outputs.sha }}
+          SHA: ${{ github.event.after }}
           REPO: ${{ steps.prep.outputs.repo }}
         run: |
           set -Eeuo pipefail
