@@ -2,7 +2,7 @@ name: Notify parent to bump submodule
 
 on:
   push:
-    branches: [ main ]
+    branches: [ ros2_jazzy ]
   workflow_dispatch: {}
 
 jobs:
