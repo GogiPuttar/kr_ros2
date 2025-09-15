@@ -1,0 +1,71 @@
+name: Dispatch proof (gh api)
+
+on:
+  workflow_dispatch:
+    inputs:
+      target_repo:
+        description: "owner/repo to dispatch to"
+        required: true
+        default: FuturHandRobotics/FuturHub
+      event_type:
+        description: "event_type (ping or submodule_update)"
+        required: true
+        default: ping
+      submodule_path:
+        description: "client_payload.submodule_path (optional)"
+        required: false
+      sha:
+        description: "client_payload.sha (optional)"
+        required: false
+      repo:
+        description: "client_payload.repo (optional)"
+        required: false
+
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Build payload
+        id: payload
+        run: |
+          set -euo pipefail
+          if [ "${{ inputs.event_type }}" = "ping" ]; then
+            echo '{"event_type":"ping","client_payload":{}}' > payload.json
+          else
+            printf '{"event_type":"%s","client_payload":{"submodule_path":"%s","sha":"%s","repo":"%s"}}' \
+              "${{ inputs.event_type }}" \
+              "${{ inputs.submodule_path || '' }}" \
+              "${{ inputs.sha || '' }}" \
+              "${{ inputs.repo || '' }}" > payload.json
+          fi
+          echo "bytes=$(wc -c < payload.json)"
+          cat payload.json
+
+      - name: Dispatch (gh api)
+        env:
+          TOKEN:  ${{ secrets.FUTURHAND_SUBMODULE_UPDATE }}   # PAT with Contents: RW on TARGET
+          TARGET: ${{ inputs.target_repo }}
+        run: |
+          set -euo pipefail
+          test -n "${TOKEN:-}" || { echo "::error::Missing FUTURHAND_SUBMODULE_UPDATE"; exit 1; }
+          echo "$TOKEN" | gh auth login --with-token >/dev/null
+
+          resp="$(mktemp)"
+          # Include headers so we can read the status line
+          gh api "repos/${TARGET}/dispatches" \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            --input payload.json \
+            -X POST \
+            -i > "$resp"
+
+          # Show the status line, then assert it's 204
+          status="$(awk 'NR==1 {print $2}' "$resp")"
+          echo "HTTP status: $status"
+          if [ "$status" != "204" ]; then
+            echo "::error::Expected 204, got $status"
+            echo "::group::Full response"; cat "$resp"; echo "::endgroup::"
+            exit 1
+          fi
+
+
