@@ -9,4 +9,10 @@ install(
   DESTINATION share/${PROJECT_NAME}/kr810
 )
 
+install(
+  DIRECTORY 
+  blah/meshes blah/urdf
+  DESTINATION share/${PROJECT_NAME}/blah
+)
+
 ament_package()

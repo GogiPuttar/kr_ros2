@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- This URDF was automatically created by SolidWorks to URDF Exporter! Originally created by Stephen Brawner (brawner@gmail.com) 
+     Commit Version: 1.6.0-4-g7f85cfe  Build Version: 1.6.7995.38578
+     For more information, please see http://wiki.ros.org/sw_urdf_exporter -->
+<robot
+  name="TOP1">
+  <link
+    name="base_link">
+    <inertial>
+      <origin
+        xyz="-0.0325575422914482 4.09197177560016E-05 0.0136690458774667"
+        rpy="0 0 0" />
+      <mass
+        value="0.175746988779419" />
+      <inertia
+        ixx="9.28789154020103E-05"
+        ixy="3.4807510449476E-07"
+        ixz="-3.19155002642247E-05"
+        iyy="0.000319614223019122"
+        iyz="-2.72396087840844E-08"
+        izz="0.000377396900797511" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://kr_robot_description/blah/meshes/base_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://kr_robot_description/blah/meshes/base_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <link
+    name="Link1">
+    <inertial>
+      <origin
+        xyz="0.0085834 0.015454 0.088315"
+        rpy="0 0 0" />
+      <mass
+        value="0.10187" />
+      <inertia
+        ixx="8.926E-05"
+        ixy="-5.5873E-08"
+        ixz="-8.2445E-06"
+        iyy="8.9185E-05"
+        iyz="-1.5402E-05"
+        izz="2.6841E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://kr_robot_description/blah/meshes/Link1.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.75294 0.75294 0.75294 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://kr_robot_description/blah/meshes/Link1.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="joint_1"
+    type="continuous">
+    <origin
+      xyz="0 0 0.036"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="Link1" />
+    <axis
+      xyz="0.88239 -0.47043 -0.0087265" />
+  </joint>
+</robot>
